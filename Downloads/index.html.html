@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EcoQuest - Save Earth, Earn Rewards</title>
+    <style>
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+      }
+
+      @keyframes pop {
+        from { transform: scale(0.85); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+      }
+
+      @keyframes blink {
+        50% { opacity: 0.3; }
+      }
+
+      body {
+        font-family: "Segoe UI", system-ui, Arial, sans-serif;
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 30px 20px 60px;
+        min-height: 100vh;
+        box-sizing: border-box;
+        background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+        color: #1c2833;
+      }
+
+      body.dark {
+        background: linear-gradient(135deg, #1e272e 0%, #2d3436 100%);
+        color: #f5f5f5;
+      }
+
+      h1 {
+        text-align: center;
+        color: #1e8449;
+        font-size: 2.2em;
+        margin-bottom: 4px;
+      }
+
+      h2 {
+        color: #145a32;
+        font-size: 1.25em;
+        margin-top: 28px;
+      }
+
+      body.dark h1,
+      body.dark h2 {
+        color: #58d68d;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .login-box {
+        background-color: white;
+        padding: 28px;
+        border-radius: 18px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        max-width: 420px;
+        margin: 40px auto 0;
+      }
+
+      .login-box input,
+      .settings-input {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 12px;
+        box-sizing: border-box;
+        border: 2px solid #d5f5e3;
+        border-radius: 10px;
+        font-size: 1rem;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #2ecc71;
+      }
+
+      button {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 999px;
+        font-size: 0.95rem;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(39, 174, 96, 0.35);
+        transition: transform 0.1s ease;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      button:disabled {
+        background: #bdc3c7;
+        box-shadow: none;
+        transform: none;
+        cursor: default;
+      }
+
+      .gold-button {
+        background: linear-gradient(135deg, #f1c40f, #f39c12);
+        color: #5d4300;
+      }
+
+      .login-box button {
+        margin-right: 8px;
+        margin-bottom: 8px;
+      }
+
+      #settings-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: white;
+        padding: 10px 16px;
+        border-radius: 14px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        margin-top: 10px;
+      }
+
+      #settings-bar button {
+        background: linear-gradient(135deg, #7f8c8d, #5d6d7e);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
+
+      #settings-bar .gold-button {
+        background: linear-gradient(135deg, #f1c40f, #f39c12);
+        color: #5d4300;
+        box-shadow: 0 4px 10px rgba(241, 196, 15, 0.4);
+      }
+
+      #settings-panel {
+        background-color: white;
+        padding: 18px;
+        border-radius: 16px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        margin: 12px 0;
+      }
+
+      #settings-panel h3 {
+        color: #145a32;
+        margin-top: 0;
+      }
+
+      #settings-panel label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      #tree {
+        font-size: 100px;
+        text-align: center;
+        margin: 24px 0 8px;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      #stage-name {
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.2em;
+      }
+
+      .card {
+        background-color: white;
+        padding: 18px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .columns {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 20px;
+      }
+
+      .columns .card {
+        flex: 1 1 300px;
+      }
+
+      .card h2 {
+        margin-top: 0;
+        font-size: 1.1em;
+      }
+
+      .quest-card {
+        background: linear-gradient(135deg, #fdebd0, #fad7a0);
+        color: #7d4e13;
+        padding: 16px 18px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        margin: 20px 0;
+      }
+
+      #challenge-list,
+      #badge-list,
+      #forest-list,
+      #leaderboard-list {
+        list-style: none;
+        padding: 0;
+      }
+
+      .challenge {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: white;
+        padding: 14px 18px;
+        margin-bottom: 12px;
+        border-radius: 14px;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      #badge-list li,
+      #forest-list li {
+        background-color: white;
+        padding: 10px 16px;
+        margin-bottom: 8px;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      }
+
+      .current-stage {
+        outline: 2px solid #2ecc71;
+        font-weight: bold;
+      }
+
+      #badge {
+        display: none;
+        background: linear-gradient(135deg, #f9e79f, #f1c40f);
+        color: #7d6608;
+        text-align: center;
+        padding: 14px;
+        margin: 20px 0;
+        border-radius: 14px;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(241, 196, 15, 0.4);
+        animation: pop 0.4s ease-out;
+      }
+
+      .quiz-option {
+        display: block;
+        width: 100%;
+        margin-bottom: 8px;
+        border-radius: 12px;
+        text-align: left;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        box-shadow: 0 4px 10px rgba(41, 128, 185, 0.3);
+      }
+
+      #quiz-feedback {
+        font-weight: bold;
+        min-height: 1.5em;
+      }
+
+      .bottom-bar {
+        text-align: center;
+        margin-top: 30px;
+      }
+
+      .bottom-bar button {
+        font-size: 1.1em;
+        padding: 14px 28px;
+      }
+
+      .live-dot {
+        color: #e74c3c;
+        font-weight: bold;
+        animation: blink 1.5s ease-in-out infinite;
+      }
+
+      .leader-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background-color: white;
+        padding: 12px 16px;
+        margin-bottom: 10px;
+        border-radius: 14px;
+        border-left: 6px solid transparent;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .leader-row.top-1 {
+        border-left-color: #f1c40f;
+      }
+
+      .leader-row.top-2 {
+        border-left-color: #bdc3c7;
+      }
+
+      .leader-row.top-3 {
+        border-left-color: #cd7f32;
+      }
+
+      .leader-row.me {
+        outline: 2px solid #2ecc71;
+      }
+
+      .leader-row .rank {
+        width: 44px;
+        text-align: center;
+        font-size: 1.4em;
+        font-weight: bold;
+      }
+
+      .leader-row .name {
+        flex: 1;
+        font-weight: bold;
+      }
+
+      .leader-row .score {
+        font-size: 0.9em;
+        white-space: nowrap;
+        opacity: 0.8;
+      }
+
+      body.dark .login-box,
+      body.dark .card,
+      body.dark #settings-bar,
+      body.dark #settings-panel,
+      body.dark .challenge,
+      body.dark #badge-list li,
+      body.dark #forest-list li,
+      body.dark .leader-row {
+        background-color: #2d3436;
+        color: #f5f5f5;
+      }
+
+      body.dark .quest-card {
+        background: linear-gradient(135deg, #6e2c00, #7d4e13);
+        color: #fdebd0;
+      }
+
+      body.dark .login-box input,
+      body.dark .settings-input {
+        background-color: #1e272e;
+        color: #f5f5f5;
+        border-color: #3b4a52;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Login screen: shown when nobody is logged in -->
+    <div id="login-screen" class="login-box">
+      <h1>🌍 EcoQuest</h1>
+      <h2 id="login-heading">Welcome! Log in to save your progress.</h2>
+      <input type="text" id="username" placeholder="Username">
+      <input type="password" id="password" placeholder="Password">
+      <button onclick="signUp()">Sign up</button>
+      <button onclick="logIn()">Log in</button>
+      <button class="gold-button" onclick="showLeaderboard()">🏆 Leaderboard</button>
+      <p id="login-message"></p>
+    </div>
+
+    <!-- Main screen: shown after logging in -->
+    <div id="app-screen" class="hidden">
+
+      <div id="settings-bar">
+        <span id="welcome"></span>
+        <div>
+          <button class="gold-button" onclick="showLeaderboard()">🏆 Leaderboard</button>
+          <button onclick="toggleSettings()">⚙️ Settings</button>
+        </div>
+      </div>
+
+      <div id="settings-panel" class="hidden">
+        <label>
+          <input type="checkbox" id="dark-toggle" onchange="toggleDarkMode()">
+          Dark mode
+        </label>
+
+        <h3>Change password</h3>
+        <input type="password" id="current-password" class="settings-input" placeholder="Current password">
+        <input type="password" id="new-password" class="settings-input" placeholder="New password (at least 6 characters)">
+        <input type="password" id="confirm-password" class="settings-input" placeholder="Confirm new password">
+        <button onclick="changePassword()">Change password</button>
+        <p id="change-message"></p>
+
+        <p><button onclick="resetProgress()">Reset my progress</button></p>
+        <p><button onclick="logOut()">Log out</button></p>
+      </div>
+
+      <h1>🌍 EcoQuest</h1>
+      <p>Save Earth, earn rewards!</p>
+      <p>Your EcoPoints: <span id="points">0</span></p>
+
+      <div id="tree">🌱</div>
+      <p id="stage-name">Seedling</p>
+
+      <div id="badge"></div>
+
+      <!-- Left: badges. Right: quiz. -->
+      <div class="columns">
+        <div class="card">
+          <h2>🎖️ Badges earned: <span id="badge-count">0 / 6</span></h2>
+          <ul id="badge-list"></ul>
+        </div>
+
+        <div class="card">
+          <h2>🧠 Eco Quiz</h2>
+          <p id="quiz-progress"></p>
+          <p id="quiz-question"></p>
+          <div id="quiz-options"></div>
+          <p id="quiz-feedback"></p>
+        </div>
+      </div>
+
+      <h2>🌳 Virtual Forest</h2>
+      <p id="forest-next"></p>
+      <ul id="forest-list"></ul>
+
+      <div class="bottom-bar">
+        <button onclick="showQuests()">📜 Quests</button>
+      </div>
+    </div>
+
+    <!-- Quests screen: opened with the 📜 Quests button -->
+    <div id="quests-screen" class="hidden">
+      <button onclick="hideQuests()">⬅ Back</button>
+      <h1>📜 Quests</h1>
+
+      <div class="quest-card">
+        <strong>📅 Daily Login Quest:</strong> log in each day to earn 5 EcoPoints.
+        <p id="daily-status"></p>
+      </div>
+
+      <h2>Challenges</h2>
+      <ul id="challenge-list"></ul>
+    </div>
+
+    <!-- Leaderboard screen: opened with the 🏆 buttons -->
+    <div id="leaderboard-screen" class="hidden">
+      <h1>🏆 Eco-Champions</h1>
+      <p><span class="live-dot">● LIVE</span> Top 10 players, updating in real time</p>
+      <p id="leaderboard-status"></p>
+      <ol id="leaderboard-list"></ol>
+      <button onclick="hideLeaderboard()">⬅ Back</button>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged,
+        updatePassword,
+        reauthenticateWithCredential,
+        EmailAuthProvider
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+      import {
+        getFirestore,
+        doc,
+        getDoc,
+        setDoc,
+        collection,
+        query,
+        orderBy,
+        limit,
+        onSnapshot
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+      // ===== Your Firebase connection =====
+      const firebaseConfig = {
+        apiKey: "AIzaSyAiEF3WviNjGFshMMzIniYV5KiNsfn3ahU",
+        authDomain: "ecoquest-6ba2d.firebaseapp.com",
+        projectId: "ecoquest-6ba2d",
+        storageBucket: "ecoquest-6ba2d.firebasestorage.app",
+        messagingSenderId: "254899349595",
+        appId: "1:254899349595:web:910a6a81a31b69556ab77e",
+        measurementId: "G-ZR06DNE2T8"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      // The leaderboard: the 10 players with the most EcoPoints
+      const leaderboardQuery = query(collection(db, "users"), orderBy("points", "desc"), limit(10));
+
+      // ===== Fixed data =====
+      const DAILY_POINTS = 5;
+      const QUIZ_POINTS = 20;
+      const medals = ["🥇", "🥈", "🥉"];
+
+      // Virtual Forest stages (these match the slide)
+      const stages = [
+        { min: 0, emoji: "🌱", name: "Seedling" },
+        { min: 100, emoji: "🌿", name: "Small Plant" },
+        { min: 250, emoji: "🌳", name: "Young Tree" },
+        { min: 500, emoji: "🌲", name: "Big Tree" },
+        { min: 1000, emoji: "🏆", name: "Eco Champion Tree" }
+      ];
+
+      // 10 challenges totaling 1,200 EcoPoints
+      const challenges = [
+        { id: "water", text: "Bring a reusable water bottle", points: 50 },
+        { id: "lights", text: "Turn off lights when you leave a room", points: 50 },
+        { id: "recycle", text: "Recycle one plastic item", points: 100 },
+        { id: "walk", text: "Walk or bike instead of driving", points: 100 },
+        { id: "bag", text: "Use a reusable shopping bag", points: 50 },
+        { id: "plantmeal", text: "Eat one plant-based meal", points: 100 },
+        { id: "litter", text: "Pick up 5 pieces of litter", points: 150 },
+        { id: "compost", text: "Compost your food scraps", points: 150 },
+        { id: "plant", text: "Plant a seedling or sapling", points: 200 },
+        { id: "cleanup", text: "Join a clean-up drive", points: 250 }
+      ];
+
+      // Quiz questions. "correct" is the position of the right answer (0 = first option).
+      const quizQuestions = [
+        {
+          id: "q1",
+          question: "Which material takes hundreds of years to break down in a landfill?",
+          options: ["Banana peel", "Plastic bottle", "Apple core"],
+          correct: 1
+        },
+        {
+          id: "q2",
+          question: "What is the best order of the three R's?",
+          options: ["Recycle, Reuse, Reduce", "Reduce, Reuse, Recycle", "Reuse, Recycle, Reduce"],
+          correct: 1
+        },
+        {
+          id: "q3",
+          question: "What is the main benefit of composting food scraps?",
+          options: ["It makes landfills bigger", "It turns waste into nutrient-rich soil", "It makes plastic"],
+          correct: 1
+        }
+      ];
+
+      // Badges use the same milestones as the forest
+      const badges = [
+        { id: "first", emoji: "🎖️", name: "First Challenge", type: "challenges", goal: 1 },
+        { id: "small", emoji: "🌿", name: "Small Plant", type: "points", goal: 100 },
+        { id: "young", emoji: "🌳", name: "Young Tree", type: "points", goal: 250 },
+        { id: "big", emoji: "🌲", name: "Big Tree", type: "points", goal: 500 },
+        { id: "champion", emoji: "🏆", name: "Eco Champion Tree", type: "points", goal: 1000 },
+        { id: "daily", emoji: "📅", name: "Daily Hero", type: "logins", goal: 1 }
+      ];
+
+      // ===== Who is logged in =====
+      let currentUid = null;
+      let currentProfile = null;
+      let creatingAccount = false;
+      let unsubscribeLeaderboard = null;
+
+      // Firebase login needs an email, so each username gets one behind the scenes
+      function emailFor(username) {
+        return username + "@ecoquest.app";
+      }
+
+      function getUsername() {
+        return document.getElementById("username").value.trim().toLowerCase();
+      }
+
+      function friendlyError(error) {
+        if (error.code === "auth/email-already-in-use") {
+          return "That username is taken. Try logging in instead.";
+        }
+        if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password" || error.code === "auth/user-not-found") {
+          return "Wrong username or password.";
+        }
+        if (error.code === "auth/too-many-requests") {
+          return "Too many tries. Wait a minute and try again.";
+        }
+        if (error.code === "auth/network-request-failed") {
+          return "No internet connection. Check your connection and try again.";
+        }
+        if (error.code === "auth/requires-recent-login") {
+          return "For security, log out, log back in, and try again.";
+        }
+        if (error.code === "permission-denied") {
+          return "Blocked by Firestore rules. Check the Rules tab in Firebase.";
+        }
+        return "Something went wrong (" + error.code + ").";
+      }
+
+      // ===== Sign up, log in, log out =====
+      async function signUp() {
+        const username = getUsername();
+        const password = document.getElementById("password").value;
+        const message = document.getElementById("login-message");
+
+        if (!/^[a-z0-9_]{3,20}$/.test(username)) {
+          message.textContent = "Username must be 3 to 20 letters, numbers, or underscores.";
+          return;
+        }
+        if (password.length < 6) {
+          message.textContent = "Password must be at least 6 characters.";
+          return;
+        }
+
+        creatingAccount = true;
+        try {
+          const result = await createUserWithEmailAndPassword(auth, emailFor(username), password);
+
+          await setDoc(doc(db, "users", result.user.uid), {
+            username: username,
+            points: 0,
+            completed: [],
+            answeredQuestions: [],
+            badges: [],
+            loginDays: 0,
+            lastLoginDate: "",
+            darkMode: false
+          });
+
+          await signOut(auth);
+          document.getElementById("login-heading").textContent = "Sign in to save your progress.";
+          message.textContent = "Account created! Now sign in with your username and password.";
+        } catch (error) {
+          message.textContent = friendlyError(error);
+        }
+        creatingAccount = false;
+      }
+
+      async function logIn() {
+        const username = getUsername();
+        const password = document.getElementById("password").value;
+        const message = document.getElementById("login-message");
+
+        if (username === "" || password === "") {
+          message.textContent = "Please enter a username and password.";
+          return;
+        }
+
+        try {
+          await signInWithEmailAndPassword(auth, emailFor(username), password);
+        } catch (error) {
+          message.textContent = friendlyError(error);
+        }
+      }
+
+      async function logOut() {
+        await signOut(auth);
+        document.getElementById("login-message").textContent = "You've logged out.";
+        document.getElementById("login-heading").textContent = "Welcome! Log in to save your progress.";
+      }
+
+      // ===== Showing the right screen =====
+      function showApp() {
+        stopLeaderboard();
+        document.getElementById("leaderboard-screen").classList.add("hidden");
+        document.getElementById("quests-screen").classList.add("hidden");
+        document.getElementById("login-screen").classList.add("hidden");
+        document.getElementById("login-message").textContent = "";
+        document.getElementById("app-screen").classList.remove("hidden");
+        document.getElementById("welcome").textContent = "Welcome, " + currentProfile.username + "!";
+        document.getElementById("badge").style.display = "none";
+
+        // Accounts made before the quiz existed don't have this list yet
+        if (!currentProfile.answeredQuestions) {
+          currentProfile.answeredQuestions = [];
+        }
+
+        document.getElementById("dark-toggle").checked = currentProfile.darkMode;
+        document.body.classList.toggle("dark", currentProfile.darkMode);
+
+        checkDailyLogin();
+        checkBadges();
+        renderAll();
+      }
+
+      function showLogin() {
+        stopLeaderboard();
+        document.getElementById("leaderboard-screen").classList.add("hidden");
+        document.getElementById("quests-screen").classList.add("hidden");
+        document.getElementById("app-screen").classList.add("hidden");
+        document.getElementById("settings-panel").classList.add("hidden");
+        document.getElementById("login-screen").classList.remove("hidden");
+        document.getElementById("password").value = "";
+        document.getElementById("current-password").value = "";
+        document.getElementById("new-password").value = "";
+        document.getElementById("confirm-password").value = "";
+        document.body.classList.remove("dark");
+      }
+
+      // ===== Quests screen =====
+      function showQuests() {
+        document.getElementById("app-screen").classList.add("hidden");
+        document.getElementById("quests-screen").classList.remove("hidden");
+      }
+
+      function hideQuests() {
+        document.getElementById("quests-screen").classList.add("hidden");
+        document.getElementById("app-screen").classList.remove("hidden");
+      }
+
+      // ===== Saving to the online database =====
+      function saveProfile() {
+        return setDoc(doc(db, "users", currentUid), currentProfile);
+      }
+
+      // ===== Daily login quest =====
+      function checkDailyLogin() {
+        const today = new Date().toDateString();
+        const status = document.getElementById("daily-status");
+
+        if (currentProfile.lastLoginDate === today) {
+          status.textContent = "✅ Completed today! Come back tomorrow for more EcoPoints.";
+          return;
+        }
+
+        currentProfile.lastLoginDate = today;
+        currentProfile.loginDays = currentProfile.loginDays + 1;
+        currentProfile.points = currentProfile.points + DAILY_POINTS;
+        status.textContent = "✅ Quest complete! You earned " + DAILY_POINTS + " EcoPoints for logging in today.";
+        saveProfile();
+      }
+
+      // ===== Badges =====
+      function getProgress(badge) {
+        if (badge.type === "challenges") {
+          return currentProfile.completed.length;
+        }
+        if (badge.type === "points") {
+          return currentProfile.points;
+        }
+        if (badge.type === "logins") {
+          return currentProfile.loginDays;
+        }
+        return 0;
+      }
+
+      function checkBadges() {
+        const banner = document.getElementById("badge");
+        let earnedSomething = false;
+
+        for (let badge of badges) {
+          const reachedGoal = getProgress(badge) >= badge.goal;
+          const alreadyHas = currentProfile.badges.includes(badge.id);
+
+          if (reachedGoal && !alreadyHas) {
+            currentProfile.badges.push(badge.id);
+            banner.textContent = "🎉 New badge earned: " + badge.emoji + " " + badge.name + "!";
+            banner.style.display = "block";
+            earnedSomething = true;
+          }
+        }
+
+        if (earnedSomething) {
+          saveProfile();
+        }
+      }
+
+      function renderBadges() {
+        const list = document.getElementById("badge-list");
+        list.innerHTML = "";
+
+        for (let badge of badges) {
+          const earned = currentProfile.badges.includes(badge.id);
+          const shownProgress = Math.min(getProgress(badge), badge.goal);
+          const status = earned ? "✅ Earned" : "🔒 Locked";
+
+          list.innerHTML += `<li>${badge.emoji} ${badge.name}: ${shownProgress} / ${badge.goal} (${status})</li>`;
+        }
+
+        document.getElementById("badge-count").textContent = currentProfile.badges.length + " / " + badges.length;
+      }
+
+      // ===== Virtual Forest =====
+      function stageFor(total) {
+        let current = stages[0];
+        for (let stage of stages) {
+          if (total >= stage.min) {
+            current = stage;
+          }
+        }
+        return current;
+      }
+
+      function renderForest() {
+        const list = document.getElementById("forest-list");
+        const current = stageFor(currentProfile.points);
+        list.innerHTML = "";
+
+        for (let stage of stages) {
+          const row = document.createElement("li");
+          row.textContent = stage.emoji + " " + stage.name + " (" + stage.min + "+ EcoPoints)";
+          if (stage === current) {
+            row.classList.add("current-stage");
+            row.textContent = row.textContent + "  ← you are here";
+          }
+          list.appendChild(row);
+        }
+
+        const next = stages.find((stage) => stage.min > currentProfile.points);
+        document.getElementById("forest-next").textContent = next
+          ? "Next stage: " + next.emoji + " " + next.name + " at " + next.min + " EcoPoints"
+          : "🏆 Top stage reached! Your forest is complete.";
+      }
+
+      // ===== Challenges =====
+      function renderChallenges() {
+        const list = document.getElementById("challenge-list");
+        list.innerHTML = "";
+
+        for (let challenge of challenges) {
+          const done = currentProfile.completed.includes(challenge.id);
+          const buttonText = done ? "Completed ✓" : "Done";
+          const disabled = done ? "disabled" : "";
+
+          list.innerHTML += `
+            <li class="challenge">
+              ${challenge.text} (${challenge.points} EcoPoints)
+              <button onclick="completeChallenge('${challenge.id}', ${challenge.points})" ${disabled}>${buttonText}</button>
+            </li>`;
+        }
+      }
+
+      function completeChallenge(challengeId, points) {
+        if (currentProfile.completed.includes(challengeId)) {
+          return;
+        }
+
+        currentProfile.completed.push(challengeId);
+        currentProfile.points = currentProfile.points + points;
+        checkBadges();
+        saveProfile();
+        renderAll();
+      }
+
+      // ===== Eco Quiz =====
+      // Finds the first question this person hasn't answered correctly yet
+      function nextQuizQuestion() {
+        return quizQuestions.find((q) => !currentProfile.answeredQuestions.includes(q.id));
+      }
+
+      function renderQuiz() {
+        const question = nextQuizQuestion();
+        const questionText = document.getElementById("quiz-question");
+        const optionsBox = document.getElementById("quiz-options");
+
+        document.getElementById("quiz-progress").textContent =
+          "Answered " + currentProfile.answeredQuestions.length + " / " + quizQuestions.length;
+
+        optionsBox.innerHTML = "";
+
+        if (!question) {
+          questionText.textContent = "🎉 You finished the quiz! Thanks for learning with EcoQuest.";
+          return;
+        }
+
+        questionText.textContent = question.question;
+
+        question.options.forEach((option, index) => {
+          const button = document.createElement("button");
+          button.className = "quiz-option";
+          button.textContent = option;
+          button.addEventListener("click", () => answerQuiz(index));
+          optionsBox.appendChild(button);
+        });
+      }
+
+      function answerQuiz(choice) {
+        const question = nextQuizQuestion();
+        const feedback = document.getElementById("quiz-feedback");
+
+        if (!question) {
+          return;
+        }
+
+        if (choice !== question.correct) {
+          feedback.textContent = "❌ Not quite. Try again!";
+          return;
+        }
+
+        // Correct: award points once, then move on to the next question
+        currentProfile.answeredQuestions.push(question.id);
+        currentProfile.points = currentProfile.points + QUIZ_POINTS;
+        checkBadges();
+        saveProfile();
+        renderAll();
+        feedback.textContent = "✅ Correct! You earned " + QUIZ_POINTS + " EcoPoints.";
+      }
+
+      // ===== Points, tree, and stage name =====
+      function renderPoints() {
+        document.getElementById("points").textContent = currentProfile.points;
+        updateTree(currentProfile.points);
+      }
+
+      function updateTree(total) {
+        const stage = stageFor(total);
+        document.getElementById("tree").textContent = stage.emoji;
+        document.getElementById("stage-name").textContent = stage.name;
+      }
+
+      function renderAll() {
+        renderPoints();
+        renderChallenges();
+        renderBadges();
+        renderForest();
+        renderQuiz();
+      }
+
+      // ===== Settings =====
+      function toggleSettings() {
+        document.getElementById("settings-panel").classList.toggle("hidden");
+      }
+
+      function toggleDarkMode() {
+        const isDark = document.getElementById("dark-toggle").checked;
+        document.body.classList.toggle("dark", isDark);
+        currentProfile.darkMode = isDark;
+        saveProfile();
+      }
+
+      async function changePassword() {
+        const current = document.getElementById("current-password").value;
+        const newPass = document.getElementById("new-password").value;
+        const confirmPass = document.getElementById("confirm-password").value;
+        const message = document.getElementById("change-message");
+        const user = auth.currentUser;
+
+        if (newPass.length < 6) {
+          message.textContent = "The new password must be at least 6 characters.";
+          return;
+        }
+        if (newPass !== confirmPass) {
+          message.textContent = "The new passwords don't match.";
+          return;
+        }
+
+        try {
+          const credential = EmailAuthProvider.credential(user.email, current);
+          await reauthenticateWithCredential(user, credential);
+          await updatePassword(user, newPass);
+
+          document.getElementById("current-password").value = "";
+          document.getElementById("new-password").value = "";
+          document.getElementById("confirm-password").value = "";
+          message.textContent = "✅ Password changed! Use the new one next time you log in.";
+        } catch (error) {
+          if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") {
+            message.textContent = "Your current password is wrong.";
+          } else {
+            message.textContent = friendlyError(error);
+          }
+        }
+      }
+
+      function resetProgress() {
+        if (!confirm("Reset your EcoPoints, challenges, quiz, and badges?")) {
+          return;
+        }
+
+        currentProfile.points = 0;
+        currentProfile.completed = [];
+        currentProfile.answeredQuestions = [];
+        currentProfile.badges = [];
+        checkBadges();
+        saveProfile();
+        renderAll();
+      }
+
+      // ===== Live leaderboard =====
+      function showLeaderboard() {
+        document.getElementById("login-screen").classList.add("hidden");
+        document.getElementById("app-screen").classList.add("hidden");
+        document.getElementById("quests-screen").classList.add("hidden");
+        document.getElementById("leaderboard-screen").classList.remove("hidden");
+        document.getElementById("leaderboard-status").textContent = "Loading...";
+
+        stopLeaderboard();
+
+        unsubscribeLeaderboard = onSnapshot(
+          leaderboardQuery,
+          (snapshot) => drawLeaderboard(snapshot),
+          (error) => {
+            document.getElementById("leaderboard-status").textContent = friendlyError(error);
+          }
+        );
+      }
+
+      function hideLeaderboard() {
+        stopLeaderboard();
+        document.getElementById("leaderboard-screen").classList.add("hidden");
+
+        if (currentProfile) {
+          document.getElementById("app-screen").classList.remove("hidden");
+        } else {
+          document.getElementById("login-screen").classList.remove("hidden");
+        }
+      }
+
+      function stopLeaderboard() {
+        if (unsubscribeLeaderboard !== null) {
+          unsubscribeLeaderboard();
+          unsubscribeLeaderboard = null;
+        }
+      }
+
+      function drawLeaderboard(snapshot) {
+        const list = document.getElementById("leaderboard-list");
+        const status = document.getElementById("leaderboard-status");
+        list.innerHTML = "";
+
+        if (snapshot.empty) {
+          status.textContent = "No players yet. Sign up and earn EcoPoints to be the first!";
+          return;
+        }
+        status.textContent = "";
+
+        let rank = 0;
+        snapshot.forEach((playerDoc) => {
+          rank = rank + 1;
+          const player = playerDoc.data();
+          const points = player.points || 0;
+          const badgeCount = (player.badges || []).length;
+          const isMe = playerDoc.id === currentUid;
+
+          const row = document.createElement("li");
+          row.className = "leader-row";
+          if (rank <= 3) {
+            row.classList.add("top-" + rank);
+          }
+          if (isMe) {
+            row.classList.add("me");
+          }
+
+          const rankCell = document.createElement("span");
+          rankCell.className = "rank";
+          rankCell.textContent = rank <= 3 ? medals[rank - 1] : "#" + rank;
+
+          // textContent (not innerHTML) keeps usernames from being read as code
+          const nameCell = document.createElement("span");
+          nameCell.className = "name";
+          nameCell.textContent = stageFor(points).emoji + " " + (player.username || "player") + (isMe ? " (you)" : "");
+
+          const scoreCell = document.createElement("span");
+          scoreCell.className = "score";
+          scoreCell.textContent = points + " EcoPoints · " + badgeCount + " 🎖️";
+
+          row.append(rankCell, nameCell, scoreCell);
+          list.appendChild(row);
+        });
+      }
+
+      // Buttons in the HTML can only call functions that are on window
+      Object.assign(window, {
+        signUp, logIn, logOut,
+        toggleSettings, toggleDarkMode, changePassword, resetProgress,
+        completeChallenge,
+        showLeaderboard, hideLeaderboard,
+        showQuests, hideQuests
+      });
+
+      // Runs when the page loads and whenever someone logs in or out
+      onAuthStateChanged(auth, async (user) => {
+        if (creatingAccount) {
+          return;
+        }
+
+        if (user) {
+          const snapshot = await getDoc(doc(db, "users", user.uid));
+          if (!snapshot.exists()) {
+            return;
+          }
+          currentUid = user.uid;
+          currentProfile = snapshot.data();
+          showApp();
+        } else {
+          currentUid = null;
+          currentProfile = null;
+          showLogin();
+        }
+      });
+    </script>
+  </body>
+</html>
